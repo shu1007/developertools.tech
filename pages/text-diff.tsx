@@ -113,13 +113,13 @@ export default function TextDiffPage() {
         maxWidth='100%'
       >
         <FormControl>
-          {/* <InputLabel id='demo-simple-select-label'>
+          <InputLabel id='mode-select-label'>
                   Mode
-          </InputLabel> */}
+          </InputLabel>
           <Select
-            // labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            labelId='mode-select-label'
             label='Mode'
+            id='mode-select'
             value={mode}
             onChange={(e) => setMode(e.target.value as MODE_TYPE)}
           >
