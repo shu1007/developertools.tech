@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem';
 import * as Diff from 'diff';
 import React, { useCallback, useEffect } from 'react';
 
@@ -11,6 +13,11 @@ import Heading from '../components/Heading';
 import Layout from '../components/Layout';
 import useLocalState from '../hooks/useLocalState';
 import useSupportsClipboardRead from '../hooks/useSupportsClipboardRead';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+
+const MODE = ['text', 'css'] as const
+type MODE_TYPE = typeof MODE[number]
 
 export default function TextDiffPage() {
   const supportsClipboardRead = useSupportsClipboardRead();
@@ -26,6 +33,10 @@ export default function TextDiffPage() {
     key: 'textDiff_output',
     defaultValue: '',
   });
+  const [mode, setMode] = useLocalState<MODE_TYPE>({
+    key: 'mode',
+    defaultValue: 'text',
+  });
 
   function handleChange1(event: React.ChangeEvent<HTMLInputElement>) {
     setInput1(event.target.value);
@@ -34,7 +45,17 @@ export default function TextDiffPage() {
     setInput2(event.target.value);
   }
 
-  const diff = Diff.diffChars(input1, input2);
+  function getDiff(ip1: string, ip2: string) {
+    switch(mode) {
+      case 'css':
+        return Diff.diffCss(ip1, ip2);
+        break;
+      default:
+        return Diff.diffChars(ip1, ip2);
+    }
+  }
+
+  const diff = getDiff(input1, input2);
 
   const compare = useCallback(() => {
     let value = '';
@@ -73,6 +94,28 @@ export default function TextDiffPage() {
       >
         Type or paste text into both fields to check the difference.
       </Typography>
+
+      <Box
+        display='flex'
+        paddingBottom={2}
+        width={1000}
+        maxWidth='100%'
+      >
+        <FormControl>
+          <InputLabel id='demo-simple-select-label'>
+                  Mode
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={mode}
+            onChange={(e) => setMode(e.target.value as MODE_TYPE)}
+          >
+            <MenuItem value={'text'}>Text</MenuItem>
+            <MenuItem value={'css'}>CSS</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
       <Box
         display='flex'
         flexDirection={{ xs: 'column', sm: 'row' }}
