@@ -16,7 +16,7 @@ import useSupportsClipboardRead from '../hooks/useSupportsClipboardRead';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
-const MODE = ['text', 'css'] as const
+const MODE = ['text', 'words', 'wordsWithSpace', 'lines', 'trimmedLines', 'sentences', 'css', 'json', 'array'] as const
 type MODE_TYPE = typeof MODE[number]
 
 export default function TextDiffPage() {
@@ -47,9 +47,20 @@ export default function TextDiffPage() {
 
   function getDiff(ip1: string, ip2: string) {
     switch(mode) {
+      case 'words':
+        return Diff.diffWords(ip1, ip2);
+      case 'wordsWithSpace':
+        return Diff.diffWordsWithSpace(ip1, ip2);
+      case 'lines':
+        return Diff.diffLines(ip1, ip2);
+      case 'trimmedLines':
+        return Diff.diffTrimmedLines(ip1, ip2);
+      case 'sentences':
+        return Diff.diffSentences(ip1, ip2);
       case 'css':
         return Diff.diffCss(ip1, ip2);
-        break;
+      case 'json':
+        return Diff.diffJson(ip1, ip2);
       default:
         return Diff.diffChars(ip1, ip2);
     }
@@ -102,17 +113,24 @@ export default function TextDiffPage() {
         maxWidth='100%'
       >
         <FormControl>
-          <InputLabel id='demo-simple-select-label'>
+          {/* <InputLabel id='demo-simple-select-label'>
                   Mode
-          </InputLabel>
+          </InputLabel> */}
           <Select
-            labelId="demo-simple-select-label"
+            // labelId="demo-simple-select-label"
             id="demo-simple-select"
+            label='Mode'
             value={mode}
             onChange={(e) => setMode(e.target.value as MODE_TYPE)}
           >
             <MenuItem value={'text'}>Text</MenuItem>
+            <MenuItem value={'words'}>Words</MenuItem>
+            <MenuItem value={'wordsWithSpace'}>WordsWithSpace</MenuItem>
+            <MenuItem value={'lines'}>Lines</MenuItem>
+            <MenuItem value={'trimmedLines'}>TrimmedLines</MenuItem>
+            <MenuItem value={'sentences'}>Sentences</MenuItem>
             <MenuItem value={'css'}>CSS</MenuItem>
+            <MenuItem value={'json'}>JSON</MenuItem>
           </Select>
         </FormControl>
       </Box>
